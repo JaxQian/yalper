@@ -9,17 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:Yalper.helloWorld"
-  ],
+  "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "Yalper.helloWorld",
-        "title": "Hello World"
-      }
-    ],
     "viewsContainers": {
       "activitybar": [
         {
