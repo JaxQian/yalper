@@ -1,0 +1,14 @@
+.wrapper {
+  display: flex;
+}
+.nav-box {
+  width: 200px;
+  height: 100vh;
+  overflow: scroll;
+  white-space: nowrap;
+}
+.code-box {
+  width: calc(100% - 200px);
+  white-space: pre;
+  text-align: left;
+}
