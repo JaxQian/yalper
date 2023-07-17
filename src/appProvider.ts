@@ -20,13 +20,13 @@ export class AppProvider implements vscode.WebviewViewProvider {
       }
       
       // app.js 是 React 组件编译后的产物，作为 Webview 中的引入脚本
-      const buildPath = 'src/app/build'
-      const { jsName, cssName } = await getBuiltName(buildPath)
-      const JSPath = vscode.Uri.joinPath(this._context.extensionUri, buildPath, jsName)
+      // const buildPath = 'src/app/build'
+      // const { jsName, cssName } = await getBuiltName(buildPath)
+      // const JSPath = vscode.Uri.joinPath(this._context.extensionUri, buildPath, jsName)
       // const appJSPath = webviewView.webview.asWebviewUri(JSPath)
-      const appJSPath = 'http://localhost:3000/static/js/bundle.js'
-      const CSSPath = vscode.Uri.joinPath(this._context.extensionUri, buildPath, cssName)
-      const appCSSPath = webviewView.webview.asWebviewUri(CSSPath)
+      const appJSPath = 'http://localhost:5173/src/main.ts' // Mock
+      // const CSSPath = vscode.Uri.joinPath(this._context.extensionUri, buildPath, cssName)
+      // const appCSSPath = webviewView.webview.asWebviewUri(CSSPath)
       
       webviewView.webview.html = `
         <!DOCTYPE html>
@@ -35,15 +35,10 @@ export class AppProvider implements vscode.WebviewViewProvider {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Yalper WebView</title>
-            <script defer="defer" src="${appJSPath}"></script>
-            <link href="${appCSSPath}" rel="stylesheet">
           </head>
           <body>
-            <div id="root">XXXXX</div>
-            <script>
-              // console.log('AAA', acquireVsCodeApi);
-              // window.acquireVsCodeApi = acquireVsCodeApi;
-            </script>
+            <div id="app">XXXXX</div>
+            <script type="module" src="${appJSPath}"></script>
           </body>
         </html>
       `
@@ -51,18 +46,28 @@ export class AppProvider implements vscode.WebviewViewProvider {
         msg => {
           console.log('++++MSG From Webview', msg)
           if (msg.command === 'fetch') {
-            handleFetch(msg.data, msg.msgId, webviewView.webview)
+            handleFetch(msg.data, msg.msgId, webviewView.webview, this._context)
           }
         }
       )
   }
 }
-const handleFetch = async (data, msgId, webview) => {
+const handleFetch = async (data, msgId, webview, context) => {
+  const token = context.globalState.get('token')
+  let headers = {}
+  // console.log('++++token', token)
+  if (token) {
+    headers.Cookie = token;
+  }
   const res = await axios({
     ...data,
-    url: `https://kapi.sre.gotokeep.com${data.url}`
+    url: `https://kapi.sre.gotokeep.com${data.url}`,
+    headers,
   })
   console.log('++++AXIOS', res)
+  if (res?.headers?.['set-cookie']) {
+    context.globalState.update('token', res.headers['set-cookie'])
+  }
   webview.postMessage({
     command: 'fetchRes',
     data: {

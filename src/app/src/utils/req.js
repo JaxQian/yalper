@@ -1,7 +1,8 @@
 import axios from 'axios';
 import Hedwig from './Hedwig';
-import { message } from 'antd';
-import { redirect } from 'react-router-dom';
+import { message } from 'ant-design-vue';
+import Router from '@/router';
+
 const isInVscodeExtension = !!window.acquireVsCodeApi
 export default async function (config) {
   console.log('++++config', config);
@@ -17,11 +18,11 @@ export default async function (config) {
   }
   const res = await func(params)
   console.log('++++req', res)
-  if (res.data.errcode !== 40011) {
-    redirect('/login')
-  }
   if (!res?.data?.data || res?.data?.errcode !== 0) {
     msg(res?.data?.errmsg || '请求失败');
+    if (res.data.errcode === 40011) {
+      Router.replace('/login')
+    }
     return;
   }
   return res.data.data
