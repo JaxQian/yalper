@@ -43,10 +43,16 @@ export class AppProvider implements vscode.WebviewViewProvider {
         </html>
       `
       webviewView.webview.onDidReceiveMessage(
-        msg => {
+        async msg => {
           console.log('++++MSG From Webview', msg)
           if (msg.command === 'fetch') {
             handleFetch(msg.data, msg.msgId, webviewView.webview, this._context)
+          } else if (msg.command === 'openEditor') {
+            const doc = await vscode.workspace.openTextDocument({
+              language: 'javascript',
+              content: msg.data
+            });
+            vscode.window.showTextDocument(doc);
           }
         }
       )

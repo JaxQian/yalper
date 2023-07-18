@@ -7,7 +7,7 @@
       @select="onSelect"
       >
     </a-tree>
-    <div class="code-box">{{ code }}</div>
+    <div v-if="!isInVscodeExtension" class="code-box">{{ code }}</div>
   </a-space>
 </template>
 
@@ -19,8 +19,11 @@ import {
 } from 'ant-design-vue';
 import Config from '@/config';
 import req from '@/utils/req';
+import vscodeApi from '@/utils/vscodeApi';
+import Hedwig from '@/utils/Hedwig';
 const treeData = ref([]);
 const code = ref('');
+const isInVscodeExtension = !!vscodeApi;
 const getGroupList = async () => {
   const res = await req({
     url: `${Config.baseUrl}/api/group/list`,
@@ -211,6 +214,9 @@ const loadDetail = async config => {
   }
   let codeStr = `export function functionName () {\n    return request(${JSON.stringify(reqConfig, null, 4)})\n}`
   code.value = `${commentsStr}\n${codeStr}`;
+  if (isInVscodeExtension) {
+    Hedwig.openEditor(code.value);
+  }
 }
 const onSelect = (selectedKeys, info) => {
   if (info?.node?.type !== 'interface') return;

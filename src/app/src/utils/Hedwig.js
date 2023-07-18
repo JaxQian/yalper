@@ -17,7 +17,14 @@ const fetch = function ({command, data}) {
     window.addEventListener('message', resFunc)
   });
 }
+const openEditor = function (data) {
+  vscodeApi.postMessage({
+    command: 'openEditor',
+    data,
+  })
+}
 Hedwig = {
   fetch,
+  openEditor,
 }
 export default Hedwig
