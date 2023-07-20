@@ -21,14 +21,16 @@ import Config from '@/config';
 import req from '@/utils/req';
 import vscodeApi from '@/utils/vscodeApi';
 import Hedwig from '@/utils/Hedwig';
-const treeData = ref([]);
+import ReqConfig from '@/utils/reqInterface';
+import { EventDataNode } from 'ant-design-vue/es/tree';
+const treeData:any = ref([]);
 const code = ref('');
 const isInVscodeExtension = !!vscodeApi;
 const getGroupList = async () => {
   const res = await req({
     url: `${Config.baseUrl}/api/group/list`,
     method: 'get',
-  });
+  } as ReqConfig);
   const list = res || [];
   const data = [];
   for (let i = 0; i < list.length; i++) {
@@ -44,27 +46,18 @@ const getGroupList = async () => {
   }
   treeData.value = data;
 };
-const onLoadData = treeNode => {
-  return new Promise<void>(resolve => {
-    if (treeNode.dataRef.children) {
-      resolve();
-      return;
-    }
-    setTimeout(() => {
-      treeNode.dataRef.children = [
-        { title: 'Child Node', key: `${treeNode.eventKey}-0` },
-        { title: 'Child Node', key: `${treeNode.eventKey}-1` },
-      ];
-      treeData.value = [...treeData.value];
-      resolve();
-    }, 1000);
-  });
-};
-const loadNodes = async config => {
+interface NodeConfig {
+  type: string,
+  title: string,
+  key: string,
+  children: NodeConfig[],
+  data: any
+}
+const loadNodes = async (config: NodeConfig | EventDataNode) => {
   if (config.children) {
     return;
   }
-  const fetchMap = {
+  const fetchMap:any = {
     group: getProjectList,
     project: getProjectCategory,
     projCat: getInterfaces,
@@ -73,7 +66,7 @@ const loadNodes = async config => {
 
   treeData.value = updateTree(treeData.value, config.key, subTree);
 }
-const updateTree = (origin, key, subTree) => {
+const updateTree = (origin: NodeConfig[], key: string | number, subTree: NodeConfig[]) => {
   if (!origin) {
     return
   }
@@ -86,7 +79,7 @@ const updateTree = (origin, key, subTree) => {
     return item
   })
 }
-const getProjectList = async (config) => {
+const getProjectList = async (config: NodeConfig) => {
   const res = await req({
     url: `${Config.baseUrl}/api/project/list`,
     method: 'get',
@@ -111,7 +104,7 @@ const getProjectList = async (config) => {
   }
   return subTree;
 }
-const getProjectCategory = async (config) => {
+const getProjectCategory = async (config: NodeConfig) => {
   const res = await req({
     url: `${Config.baseUrl}/api/project/get`,
     method: 'get',
@@ -134,7 +127,7 @@ const getProjectCategory = async (config) => {
   }
   return subTree;
 }
-const getInterfaces = async (config) => {
+const getInterfaces = async (config: NodeConfig) => {
   const res = await req({
     url: `${Config.baseUrl}/api/interface/list_cat`,
     method: 'get',
@@ -160,14 +153,21 @@ const getInterfaces = async (config) => {
   }
   return subTree;
 }
-const loadDetail = async config => {
+interface NodeDetail {
+  event: string;
+  selected: boolean;
+  node: NodeConfig;
+  selectedNodes: NodeConfig[];
+  nativeEvent: MouseEvent;
+}
+const loadDetail = async (config: NodeDetail) => {
   const res = await req({
     url: `${Config.baseUrl}/api/interface/get`,
     method: 'get',
     params: {
       id: config.node.data._id
     }
-  });
+  } as ReqConfig);
   const detail = res;
   const comments = [detail.title];
   let docUrl = `https://kapi.sre.gotokeep.com/project/${detail.project_id}/interface/api/${detail._id}`;
@@ -184,12 +184,19 @@ const loadDetail = async config => {
     comments.push(`@query {String} ${q.name} ${q.desc} ${q.required ? '必须' : '可选'}`)
   }
   let commentsStr = `/**\n* ${comments.join('\n* ')} \n*/`;
-  let reqConfig = {
+  interface ReqConfig {
+    url: string;
+    method: string;
+    headers?: any;
+    params?: any;
+    data?: any;
+  }
+  let reqConfig: ReqConfig = {
     url: detail.query_path.path,
     method: detail.method,
   }
   if (detail.req_headers?.length) {
-    let headers = {};
+    let headers: any = {};
     for (let i = 0; i < detail.req_headers.length; i++) {
       const h = detail.req_headers[i];
       headers[h.name] = h.value
@@ -197,7 +204,7 @@ const loadDetail = async config => {
     reqConfig.headers = headers;
   }
   if (detail.req_query?.length) {
-    let params = {};
+    let params:any = {};
     for (let i = 0; i < detail.req_query.length; i++) {
       const h = detail.req_query[i];
       params[h.name] = h.example || ''
@@ -205,7 +212,7 @@ const loadDetail = async config => {
     reqConfig.params = params;
   }
   if (detail.req_body_form?.length) {
-    let data = {};
+    let data:any = {};
     for (let i = 0; i < detail.req_body_form.length; i++) {
       const h = detail.req_body_form[i];
       data[h.name] = h.example || ''
@@ -218,7 +225,7 @@ const loadDetail = async config => {
     Hedwig.openEditor(code.value);
   }
 }
-const onSelect = (selectedKeys, info) => {
+const onSelect = (_selectedKeys: any, info: any) => {
   if (info?.node?.type !== 'interface') return;
   loadDetail(info);
 }

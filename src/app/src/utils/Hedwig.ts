@@ -1,14 +1,17 @@
 import vscodeApi from './vscodeApi';
-let Hedwig = null
-const fetch = function ({command, data}) {
+interface HW {
+  fetch: Function;
+  openEditor: Function;
+}
+const fetch = function ({command, data}: { command: string, data: any }) {
   const msgId = Date.now()
   vscodeApi.postMessage({
     command,
     data,
     msgId,
   })
-  return new Promise((resolve, reject) => {
-    const resFunc = e => {
+  return new Promise((resolve) => {
+    const resFunc = (e: MessageEvent) => {
       if (e.data.command === 'fetchRes' && e.data.msgId === msgId) {
         window.removeEventListener('message', resFunc)
         resolve(e.data.data)
@@ -17,13 +20,13 @@ const fetch = function ({command, data}) {
     window.addEventListener('message', resFunc)
   });
 }
-const openEditor = function (data) {
+const openEditor = function (data: any) {
   vscodeApi.postMessage({
     command: 'openEditor',
     data,
   })
 }
-Hedwig = {
+let Hedwig: HW = {
   fetch,
   openEditor,
 }

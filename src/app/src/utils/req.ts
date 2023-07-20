@@ -1,13 +1,20 @@
-import axios from 'axios';
+import axios, { AxiosStatic } from 'axios';
 import Hedwig from './Hedwig';
 import { message } from 'ant-design-vue';
 import Router from '@/router';
+import ReqConfig from './reqInterface';
 
+declare global {
+  interface Window {
+    acquireVsCodeApi: () => any;
+  }
+}
 const isInVscodeExtension = !!window.acquireVsCodeApi
-export default async function (config) {
+
+export default async function (config: ReqConfig) {
   console.log('++++config', config);
-  let func = axios
-  let params = config
+  let func: AxiosStatic | Function = axios
+  let params: ReqConfig = config
   let msg = message.error
   if (isInVscodeExtension) {
     func = Hedwig.fetch

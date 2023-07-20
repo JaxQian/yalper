@@ -2,7 +2,6 @@
 .vscode-test/**
 out/**
 node_modules/**
-src/**
 .gitignore
 .yarnrc
 webpack.config.js
@@ -11,3 +10,16 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+src/test/**
+src/app/.vscode/**
+src/app/build/**
+src/app/node_modules/**
+src/app/src/**
+src/app/.gitignore
+src/app/index.html
+src/app/package.json
+src/app/package-lock.json
+src/app/README.md
+src/app/tsconfig.json
+src/app/tsconfig.node.json
+src/app/vite.config.json

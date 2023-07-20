@@ -3,12 +3,18 @@
   "displayName": "Yalper",
   "description": "A YAPI Helper",
   "version": "0.0.1",
+  "private": true,
   "engines": {
     "vscode": "^1.76.0"
   },
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JaxQian/yalper.git"
+  },
+  "publisher": "Jax",
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
@@ -43,20 +49,20 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.76.0",
     "@types/glob": "^8.0.1",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
+    "@types/vscode": "^1.76.0",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
+    "@vscode/test-electron": "^2.2.2",
     "eslint": "^8.33.0",
     "glob": "^8.1.0",
     "mocha": "^10.1.0",
-    "typescript": "^4.9.4",
     "ts-loader": "^9.4.2",
+    "typescript": "^4.9.4",
     "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1",
-    "@vscode/test-electron": "^2.2.2"
+    "webpack-cli": "^5.0.1"
   },
   "dependencies": {
     "axios": "^1.4.0"

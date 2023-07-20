@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import {
   Form as AForm,
   FormItem as AFormItem,
@@ -29,12 +29,12 @@ import {
 import req from '@/utils/req';
 import Router from '@/router';
 import { wait } from '@/utils/index';
+import ReqConfig from '@/utils/reqInterface';
 
 const formData = ref({
   email: '',
   password: '',
 })
-
 const login = async () => {
   const res = await req({
     url: '/api/user/login_by_ldap',
@@ -42,7 +42,7 @@ const login = async () => {
     data: {
       ...formData.value
     },
-  })
+  } as ReqConfig)
   console.log('++++login', res);
   await wait(1000);
   Router.replace('/');
