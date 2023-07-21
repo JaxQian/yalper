@@ -10,6 +10,11 @@
       size="small"
       @click="logout">登出</a-button>
   </div>
+  <!-- <a-input
+    v-model:value="searchKeywords"
+    placeholder="请输入目录或接口名称"
+    style="width: 200px"
+  /> -->
   <a-space align="start">
     <a-tree
       v-if="treeData.length"
@@ -28,7 +33,8 @@ import { onMounted, ref } from 'vue';
 import {
   Tree as ATree,
   Space as ASpace,
-  Button as AButton
+  Button as AButton,
+  // Input as AInput
 } from 'ant-design-vue';
 import Config from '@/config';
 import req from '@/utils/req';
@@ -36,10 +42,11 @@ import vscodeApi from '@/utils/vscodeApi';
 import Hedwig from '@/utils/Hedwig';
 import ReqConfig from '@/utils/reqInterface';
 import Router from '@/router';
-import { wait } from '@/utils/index';
+import { wait, objToStr } from '@/utils/index';
 import { EventDataNode } from 'ant-design-vue/es/tree';
 const treeData:any = ref([]);
 const code = ref('');
+// const searchKeywords = ref('');
 const isInVscodeExtension = !!vscodeApi;
 const getGroupList = async () => {
   const res = await req({
@@ -81,6 +88,14 @@ const loadNodes = async (config: NodeConfig | EventDataNode) => {
 
   treeData.value = updateTree(treeData.value, config.key, subTree);
 }
+//  const onSearch = async (value: string) => {
+//   // searchKeywords.value = value;
+//  }
+// const filterTreeNode = async (node: EventDataNode): boolean => {
+//   console.log('******', node);
+  
+//   return false
+// }
 const updateTree = (origin: NodeConfig[], key: string | number, subTree: NodeConfig[]) => {
   if (!origin) {
     return
@@ -210,6 +225,9 @@ const loadDetail = async (config: NodeDetail) => {
     url: detail.query_path.path,
     method: detail.method,
   }
+  if (/\/{/.test(reqConfig.url)) {
+    reqConfig.url = reqConfig.url.replace(/\/{/g, '/${')
+  }
   if (detail.req_headers?.length) {
     let headers: any = {};
     for (let i = 0; i < detail.req_headers.length; i++) {
@@ -234,7 +252,9 @@ const loadDetail = async (config: NodeDetail) => {
     }
     reqConfig.data = data;
   }
-  let codeStr = `export function functionName () {\n    return request(${JSON.stringify(reqConfig, null, 4)})\n}`
+  // let codeStr = `export function nameMePlease () {\n    return request(${JSON.stringify(reqConfig, null, 4)})\n}`
+  const reqConfigStr = objToStr(reqConfig);
+  let codeStr = `export function nameMePlease () {\n  return request(${reqConfigStr})\n}`
   code.value = `${commentsStr}\n${codeStr}`;
   if (isInVscodeExtension) {
     Hedwig.openEditor(code.value);
