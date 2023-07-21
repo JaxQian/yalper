@@ -1,10 +1,18 @@
 <template>
-  <a-button
-    class="logout-btn"
-    size="small"
-    @click="logout">登出</a-button>
+  <div class="btn-box">
+    <a-button
+      size="small"
+      ghost
+      type="primary"
+      @click="refresh">刷新</a-button>
+    <a-button
+      class="logout-btn"
+      size="small"
+      @click="logout">登出</a-button>
+  </div>
   <a-space align="start">
     <a-tree
+      v-if="treeData.length"
       class="nav-box"
       :load-data="loadNodes"
       :tree-data="treeData"
@@ -236,6 +244,11 @@ const onSelect = (_selectedKeys: any, info: any) => {
   if (info?.node?.type !== 'interface') return;
   loadDetail(info);
 }
+const refresh = async () => {
+  treeData.value = [];
+  code.value = '';
+  getGroupList();
+}
 const logout = async () => {
   await req({
     url: '/api/user/logout',
@@ -261,8 +274,12 @@ onMounted(() => {
   white-space: pre;
   text-align: left;
 }
-.logout-btn {
-  display: block;
+.btn-box {
+  display: flex;
+  justify-content: flex-end;
   margin-bottom: 12px;
+}
+.logout-btn {
+  margin-left: 12px;
 }
 </style>
