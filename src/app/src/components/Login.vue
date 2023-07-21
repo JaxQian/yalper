@@ -9,7 +9,7 @@
     <a-form-item
       label="密码："
       name="password">
-      <a-input v-model:value="formData.password"></a-input>
+      <a-input v-model:value="formData.password" type="password"></a-input>
     </a-form-item>
     <a-button
       type="primary"
@@ -36,14 +36,13 @@ const formData = ref({
   password: '',
 })
 const login = async () => {
-  const res = await req({
+  await req({
     url: '/api/user/login_by_ldap',
     method: 'post',
     data: {
       ...formData.value
     },
   } as ReqConfig)
-  console.log('++++login', res);
   await wait(1000);
   Router.replace('/');
 }

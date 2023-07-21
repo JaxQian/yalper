@@ -10,11 +10,13 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+README.example.md
 src/test/**
 src/app/.vscode/**
 src/app/build/**
 src/app/node_modules/**
 src/app/src/**
+src/app/dist/index.html
 src/app/.gitignore
 src/app/index.html
 src/app/package.json

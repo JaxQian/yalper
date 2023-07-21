@@ -1,4 +1,8 @@
 <template>
+  <a-button
+    class="logout-btn"
+    size="small"
+    @click="logout">登出</a-button>
   <a-space align="start">
     <a-tree
       class="nav-box"
@@ -15,13 +19,16 @@
 import { onMounted, ref } from 'vue';
 import {
   Tree as ATree,
-  Space as ASpace
+  Space as ASpace,
+  Button as AButton
 } from 'ant-design-vue';
 import Config from '@/config';
 import req from '@/utils/req';
 import vscodeApi from '@/utils/vscodeApi';
 import Hedwig from '@/utils/Hedwig';
 import ReqConfig from '@/utils/reqInterface';
+import Router from '@/router';
+import { wait } from '@/utils/index';
 import { EventDataNode } from 'ant-design-vue/es/tree';
 const treeData:any = ref([]);
 const code = ref('');
@@ -229,6 +236,14 @@ const onSelect = (_selectedKeys: any, info: any) => {
   if (info?.node?.type !== 'interface') return;
   loadDetail(info);
 }
+const logout = async () => {
+  await req({
+    url: '/api/user/logout',
+    method: 'get',
+  } as ReqConfig)
+  await wait(1000);
+  Router.replace('/login');
+}
 onMounted(() => {
   getGroupList();
 })
@@ -245,5 +260,9 @@ onMounted(() => {
   width: calc(100% - 200px);
   white-space: pre;
   text-align: left;
+}
+.logout-btn {
+  display: block;
+  margin-bottom: 12px;
 }
 </style>
