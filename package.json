@@ -22,7 +22,7 @@
       "activitybar": [
         {
           "id": "app",
-          "icon": "media/logo.svg",
+          "icon": "media/logo.png",
           "title": "Yalper"
         }
       ]
